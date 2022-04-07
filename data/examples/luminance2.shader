@@ -1,3 +1,4 @@
+//Converted to OpenGL by Q-mii & Exeldro February 25, 2022
 uniform float4 color;
 uniform float lumaMax = 1.05;
 uniform float lumaMin = 0.01;
@@ -27,7 +28,7 @@ float4 mainImage(VertData v_in) : TARGET
     {
         rgba = InvertColor(rgba);
     }
-    float luminance = dot(rgba * color, float3(0.299, 0.587, 0.114));
+    float luminance = rgba.r * color.r * 0.299 + rgba.g * color.g * 0.587 + rgba.b * color.b * 0.114;
 
 	//intensity = min(max(intensity,minIntensity),maxIntensity);
     float clo = smoothstep(lumaMin, lumaMin + lumaMinSmooth, luminance);

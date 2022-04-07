@@ -1,7 +1,7 @@
 // Night Sky shader by Charles Fettinger for obs-shaderfilter plugin 6/2020 v.65
 // https://github.com/Oncorporation/obs-shaderfilter
-//https://www.shadertoy.com/view/3tfXRM Simple Night Sky - coverted from and updated
-
+//https://www.shadertoy.com/view/3tfXRM Simple Night Sky - converted from and updated
+//Converted to OpenGL by Q-mii & Exeldro February 22, 2022
 uniform string notes = "add notes here";
 
 uniform float speed = 20.0;
@@ -156,7 +156,7 @@ float4 mainImage(VertData v_in) : TARGET
 {
 	float4 rgba;// = image.Sample(textureSampler, v_in.uv);
 	float alpha = clamp(Alpha_Percentage *.01 ,0,1.0);
-	float2 center_pixel_coordinates = float2(((float)center_width_percentage * 0.01), ((float)center_height_percentage * 0.01));
+	float2 center_pixel_coordinates = float2((center_width_percentage * 0.01), (center_height_percentage * 0.01));
 	float2 st = v_in.uv* uv_scale;
 	float2 toCenter = center_pixel_coordinates - st;
 
@@ -220,9 +220,9 @@ float4 mainImage(VertData v_in) : TARGET
 	{
 		float4 color = image.Sample(textureSampler, v_in.uv);
 		float4 original_color = color;
-		float4 luma = dot(color.rgb,float3(0.299,0.587,0.114));
+		float luma = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
 		if (Replace_Image_Color)
-			color = luma;
+			color = float4(luma, luma, luma, luma); 
 		rgba = lerp(original_color, rgba * color,alpha);
 		
 	}

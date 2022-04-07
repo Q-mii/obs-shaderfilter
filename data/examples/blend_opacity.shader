@@ -1,5 +1,6 @@
-// opaicty blend shader by Charles Fettinger for obs-shaderfilter plugin 3/2019
+// opacity blend shader by Charles Fettinger for obs-shaderfilter plugin 3/2019
 //https://github.com/Oncorporation/obs-shaderfilter
+//Converted to OpenGL by Exeldro February 14, 2022
 uniform bool Vertical;
 uniform bool Rotational;
 uniform float Rotation_Offset = 0.0; //<Range(0.0, 6.28318531)>
@@ -12,18 +13,15 @@ uniform string Notes = "Spread is wideness of opacity blend and is limited betwe
 
 float4 mainImage(VertData v_in) : TARGET
 {
-	const float PI = 3.14159265f;//acos(-1);
-
-
-	float4 color = image.Sample(textureSampler, v_in.uv);
-	float luminance = dot(color, float3(0.299, 0.587, 0.114));
-	float4 gray = {luminance,luminance,luminance, 1};
+	float4 point_color = image.Sample(textureSampler, v_in.uv);
+	float luminance = 0.299*point_color.r+0.587*point_color.g+0.114*point_color.b;
+	float4 gray = float4(luminance,luminance,luminance, 1);
 
 	float2 lPos = (v_in.uv * uv_scale + uv_offset) / clamp(Spread, 0.25, 10.0);
 	float time = (elapsed_time * clamp(Speed, -5.0, 5.0)) / clamp(Spread, 0.25, 10.0);
 	float dist = distance(v_in.uv , (float2(0.99, 0.99) * uv_scale + uv_offset));
 
-	if (color.a > 0.0 || Apply_To_Alpha_Layer == false)
+	if (point_color.a > 0.0 || Apply_To_Alpha_Layer == false)
 	{
 		//set opacity and direction
 		float opacity = (-1 * lPos.x) * 0.5;
@@ -43,9 +41,9 @@ float4 mainImage(VertData v_in) : TARGET
 
 		opacity += time;
 		opacity = frac(opacity);
-		color.a = lerp(Opacity_Start_Percent * 0.01, Opacity_End_Percent * 0.01, clamp(opacity, 0.0, 1.0));
+		point_color.a = lerp(Opacity_Start_Percent * 0.01, Opacity_End_Percent * 0.01, clamp(opacity, 0.0, 1.0));
 	}
-	return color;
+	return point_color;
 }
 
 

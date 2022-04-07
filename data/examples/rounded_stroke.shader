@@ -1,5 +1,6 @@
 //rounded rectange shader from https://raw.githubusercontent.com/exeldro/obs-lua/master/rounded_rect.shader
 //modified slightly by Surn 
+//Converted to OpenGl by Q-mii & Exeldro February 21, 2022
 uniform int corner_radius;
 uniform int border_thickness;
 uniform int minimum_alpha_percent = 50;
@@ -9,8 +10,8 @@ uniform string notes = "Outlines the opaque areas with a rounded border. Default
 float4 mainImage(VertData v_in) : TARGET
 {
     float min_alpha = clamp(minimum_alpha_percent * .01, -1.0, 101.0);
-    float4 output = image.Sample(textureSampler, v_in.uv);
-    if (output.a < min_alpha)
+    float4 output_color = image.Sample(textureSampler, v_in.uv);
+    if (output_color.a < min_alpha)
     {
         return float4(0.0, 0.0, 0.0, 0.0);
     }
@@ -34,11 +35,10 @@ float4 mainImage(VertData v_in) : TARGET
     }
     if (closedEdgeX == 0 && closedEdgeY == 0)
     {
-        return output;
+        return float4(output_color);
     }
     if (closedEdgeX != 0)
     {
-        [loop]
         for (int x = 1; x < corner_radius; x++)
         {
             if (image.Sample(textureSampler, v_in.uv + float2(x * uv_pixel_interval.x, 0)).a < min_alpha)
@@ -55,7 +55,6 @@ float4 mainImage(VertData v_in) : TARGET
     }
     if (closedEdgeY != 0)
     {
-        [loop]
         for (int y = 1; y < corner_radius; y++)
         {
             if (image.Sample(textureSampler, v_in.uv + float2(0, y * uv_pixel_interval.y)).a < min_alpha)
@@ -78,7 +77,7 @@ float4 mainImage(VertData v_in) : TARGET
         }
         else
         {
-            return output;
+            return float4(output_color);
         }
     }
     if (closedEdgeY == 0)
@@ -89,7 +88,7 @@ float4 mainImage(VertData v_in) : TARGET
         }
         else
         {
-            return output;
+            return float4(output_color);
         }
     }
 
@@ -102,7 +101,7 @@ float4 mainImage(VertData v_in) : TARGET
         }
         else
         {
-            return output;
+            return output_color;
         }
     }
     return float4(0.0, 0.0, 0.0, 0.0);

@@ -1,6 +1,6 @@
 // Glass shader by Charles Fettinger for obs-shaderfilter plugin 4/2019
 //https://github.com/Oncorporation/obs-shaderfilter
-
+//Converted to OpenGl by Q-mii & Exeldro February 25, 2022
 uniform float Alpha_Percent = 100.0;
 uniform float Offset_Amount = 0.8;
 uniform int xSize = 8;
@@ -18,11 +18,11 @@ float4 mainImage(VertData v_in) : TARGET
 {
 	
 
-	int xSubPixel = (v_in.uv.x * uv_size.x) % clamp(xSize,1,100);
-	int ySubPixel = (v_in.uv.y * uv_size.y) % clamp(ySize,1,100);
-	float2 offsets = {Offset_Amount * xSubPixel / uv_size.x, Offset_Amount * ySubPixel / uv_size.y};
+	int xSubPixel = int(mod((v_in.uv.x * uv_size.x) , float(clamp(xSize,1,100))));
+	int ySubPixel = int(mod((v_in.uv.y * uv_size.y) , float(clamp(ySize,1,100))));
+	float2 offsets = float2(Offset_Amount * xSubPixel / uv_size.x, Offset_Amount * ySubPixel / uv_size.y);
 	float2 uv = v_in.uv + offsets;
-	float2 uv2 = {uv.x + (Reflection_Offset / uv_size.x),uv.y + (Reflection_Offset / uv_size.y)};
+	float2 uv2 = float2(uv.x + (Reflection_Offset / uv_size.x),uv.y + (Reflection_Offset / uv_size.y));
 
 	float4 rgba = image.Sample(textureSampler, v_in.uv);
 	float4 rgba_output = float4(rgba.rgb * Border_Color.rgb, rgba.a);

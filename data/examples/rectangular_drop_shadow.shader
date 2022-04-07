@@ -1,3 +1,4 @@
+//Converted to OpenGL by Exeldro February 22, 2022
 uniform int shadow_offset_x;
 uniform int shadow_offset_y;
 uniform int shadow_blur_size;
@@ -6,11 +7,11 @@ uniform float4 shadow_color;
 
 float4 mainImage(VertData v_in) : TARGET
 {
-    int shadow_blur_samples = pow(shadow_blur_size * 2 + 1, 2);
+    int shadow_blur_samples = int(pow(shadow_blur_size * 2 + 1, 2));
     
     float4 color = image.Sample(textureSampler, v_in.uv);
-    float2 shadow_uv = float2(v_in.uv.x - uv_pixel_interval.x * shadow_offset_x, 
-                              v_in.uv.y - uv_pixel_interval.y * shadow_offset_y);
+    float2 shadow_uv = float2(v_in.uv.x - uv_pixel_interval.x * int(shadow_offset_x), 
+                              v_in.uv.y - uv_pixel_interval.y * int(shadow_offset_y));
                               
     float start_of_overlap_x = max(0, shadow_uv.x - shadow_blur_size * uv_pixel_interval.x);
     float end_of_overlap_x = min(1, shadow_uv.x + shadow_blur_size * uv_pixel_interval.x);

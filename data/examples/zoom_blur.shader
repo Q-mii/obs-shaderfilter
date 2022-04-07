@@ -2,6 +2,7 @@
 // https://github.com/Oncorporation/obs-shaderfilter
 // https://github.com/dinfinity/mpc-pixel-shaders/blob/master/PS_Zoom%20Blur.hlsl 
 //for Media Player Classic HC or BE
+//Converted to OpenGL by Q-mii & Exeldro February 18, 2022
 uniform int samples = 32;
 uniform float magnitude = 0.5;
 uniform int speed_percent = 0;
@@ -24,7 +25,7 @@ float Styler(float t,float b,float c,float d,bool ease)
 
 float4 mainImage(VertData v_in) : TARGET
 {
-	float speed = (float)speed_percent * 0.01;
+	float speed = speed_percent * 0.01;
 
 	// circular easing variable
 	float t = 1.0 + sin(elapsed_time * speed);
@@ -35,7 +36,7 @@ float4 mainImage(VertData v_in) : TARGET
 	if (glitch) t = clamp(t + ((rand_f *2) - 1), 0.0,2.0);
 
 	b = Styler(t, 0, c, d, ease);
-	float sample_speed = max((float)samples * b, 1.0);
+	float sample_speed = max(samples * b, 1.0);
 
 	float PI = 3.1415926535897932384626433832795;//acos(-1);
 	float4 c0 = image.Sample(textureSampler, v_in.uv);
@@ -50,7 +51,7 @@ float4 mainImage(VertData v_in) : TARGET
 	float radius = sqrt(pow(xTrans,2) + pow(yTrans,2));
 
 	float2 currentCoord;
-	float4 accumulatedColor = {0,0,0,0};
+	float4 accumulatedColor = float4(0,0,0,0);
 
 	float4 currentColor = image.Sample(textureSampler, currentCoord);
 	accumulatedColor = currentColor;

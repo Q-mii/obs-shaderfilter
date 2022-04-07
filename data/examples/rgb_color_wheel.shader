@@ -1,5 +1,6 @@
 // RGB Color Wheel shader by Charles Fettinger for obs-shaderfilter plugin 5/2020
 // https://github.com/Oncorporation/obs-shaderfilter
+//Converted to OpenGl by Q-mii & Exeldro February 25, 2022
 uniform float speed = 2.0;
 uniform float color_depth = 2.10;
 uniform bool Apply_To_Image;
@@ -23,12 +24,12 @@ float4 mainImage(VertData v_in) : TARGET
 	const float PI = 3.14159265f;//acos(-1);
 	float PI180th = 0.0174532925; //PI divided by 180
 	float4 rgba = image.Sample(textureSampler, v_in.uv);
-	float2 center_pixel_coordinates = float2(((float)center_width_percentage * 0.01), ((float)center_height_percentage * 0.01) );
+	float2 center_pixel_coordinates = float2((center_width_percentage * 0.01), (center_height_percentage * 0.01) );
 	float2 st = v_in.uv* uv_scale;
 	float2 toCenter = center_pixel_coordinates - st ;
 	float r = length(toCenter) * color_depth;
 	float angle = atan2(toCenter.y ,toCenter.x );
-	float angleMod = (elapsed_time * speed % 18) / 18;
+	float angleMod = (elapsed_time * mod(speed ,18)) / 18;
 
 	rgba.rgb = hsv2rgb(float3((angle / PI*0.5) + angleMod,r,1.0));
 
@@ -38,9 +39,9 @@ float4 mainImage(VertData v_in) : TARGET
 	{
 		color = image.Sample(textureSampler, v_in.uv);
 		original_color = color;
-		float4 luma = dot(color,float4(0.30, 0.59, 0.11, 1.0));
+		float luma = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
 		if (Replace_Image_Color)
-			color = luma;
+			color = float4(luma, luma, luma, luma);
 		rgba = lerp(original_color, rgba * color,clamp(Alpha_Percentage *.01 ,0,1.0));
 		
 	}

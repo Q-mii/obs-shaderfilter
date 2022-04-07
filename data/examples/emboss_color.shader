@@ -1,6 +1,6 @@
 // Color Emboss shader by Charles Fettinger for obs-shaderfilter plugin 4/2019
 //https://github.com/Oncorporation/obs-shaderfilter
-
+//Converted to OpenGL by Q-mii & Exeldro February 18, 2022
 uniform int Angle_Steps = 9; //<range 1 - 20>
 uniform int Radius_Steps = 4; //<range 0 - 20>
 uniform float ampFactor = 12.0;
@@ -13,7 +13,7 @@ float4 mainImage(VertData v_in) : TARGET
 	float radiusSteps = clamp(Radius_Steps, 0, 20);
 	float angleSteps = clamp(Angle_Steps, 1, 20);
 	float PI = 3.1415926535897932384626433832795;//acos(-1);
-	int totalSteps = (radiusSteps * angleSteps);
+	int totalSteps = int(radiusSteps * angleSteps);
 	float minRadius = (1 * uv_pixel_interval.y);
 	float maxRadius = (6 * uv_pixel_interval.y);
 
@@ -23,7 +23,7 @@ float4 mainImage(VertData v_in) : TARGET
 
 	float4 c0 = image.Sample(textureSampler, v_in.uv);
 	float4 origColor = c0;
-	float4 accumulatedColor = {0,0,0,0};
+	float4 accumulatedColor = float4(0,0,0,0);
 
 	if (c0.a > 0.0 || Apply_To_Alpha_Layer == false)
 	{
@@ -39,7 +39,7 @@ float4 mainImage(VertData v_in) : TARGET
 				currentCoord = v_in.uv + float2(xDiff, yDiff);
 				float4 currentColor = image.Sample(textureSampler, currentCoord);
 				float4 colorDiff = abs(c0 - currentColor);
-				float currentFraction = ((float)(radiusSteps + 1 - radiusStep)) / (radiusSteps + 1);
+				float currentFraction = ((radiusSteps + 1 - radiusStep)) / (radiusSteps + 1);
 				accumulatedColor += currentFraction * colorDiff / totalSteps * sign(angle - PI);;
 
 			}

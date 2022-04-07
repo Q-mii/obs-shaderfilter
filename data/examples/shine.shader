@@ -1,6 +1,7 @@
 // Shine Shader By Charles Fettinger (https://github.com/Oncorporation)  3/2019
 // use color to control shine amount, use transition wipes or make your own alpha texture
 // slerp not currently used, for circular effects
+//Converted to OpenGL by Exeldro February 14, 2022
 uniform texture2d l_tex;
 uniform float4 shine_color ;
 uniform int speed_percent = 25;
@@ -12,29 +13,29 @@ uniform bool hide = false;
 uniform bool reverse = false;
 uniform bool One_Direction = true;
 uniform bool glitch = false;
-uniform string notes = "Use Luma Wipes ( C:\Program Files (x86)\OBS\obs-studio\data\obs-plugins\obs-transitions\luma_wipes ) 'ease' makes the animation pause at the begin and end for a moment, 'hide' will make the image disappear, 'glitch' is random and amazing, 'reverse' quickly allows you to test settings, 'One Direction' only shows the shine as it travels in one direction, 'delay percentage' adds a delay between shines (requires adjustment to speed: https://www.desmos.com/calculator/wkgbndweyt )";
+uniform string notes = "Use Luma Wipes ( ~/OBS.app/Contents/Resources/data/obs-plugins/obs-transitions/luma_wipes ) 'ease' makes the animation pause at the begin and end for a moment, 'hide' will make the image disappear, 'glitch' is random and amazing, 'reverse' quickly allows you to test settings, 'One Direction' only shows the shine as it travels in one direction, 'delay percentage' adds a delay between shines (requires adjustment to speed: https://www.desmos.com/calculator/wkgbndweyt )";
 
 uniform float start_adjust;
 uniform float stop_adjust;
 
 float EaseInOutCircTimer(float t,float b,float c,float d){
-	t /= d/2;
-	if (t < 1) return -c/2 * (sqrt(1 - t*t) - 1) + b;
-	t -= 2;
-	return c/2 * (sqrt(1 - t*t) + 1) + b;	
+	t /= d/2.0;
+	if (t < 1.0) return -c/2.0 * (sqrt(1.0 - t*t) - 1.0) + b;
+	t -= 2.0;
+	return c/2.0 * (sqrt(1.0 - t*t) + 1.0) + b;	
 }
 
 float Styler(float t,float b,float c,float d,bool ease)
 {
-	if (ease) return EaseInOutCircTimer(t,0,c,d);
+	if (ease) return EaseInOutCircTimer(t,0.0,c,d);
 	return t;
 }
 
-float4 convert_pmalpha(float4 color)
+float4 convert_pmalpha(float4 c)
 {
-	float4 ret = color;
-	if (color.a >= 0.001)
-		ret.xyz /= color.a;
+	float4 ret = c;
+	if (c.a >= 0.001)
+		ret.xyz /= c.a;
 	else
 		ret = float4(0.0, 0.0, 0.0, 0.0);
 	return ret;
@@ -43,7 +44,7 @@ float4 convert_pmalpha(float4 color)
 float4 slerp(float4 start, float4 end, float percent)
 {
 	// Dot product - the cosine of the angle between 2 vectors.
-	float dotf = dot(start, end);
+	float dotf = start.r*end.r+start.g*end.g+start.b*end.b+start.a*end.a;
 	// Clamp it to be in the range of Acos()
 	// This may be unnecessary, but floating point
 	// precision can be a fickle mistress.
@@ -63,13 +64,12 @@ float4 mainImage(VertData v_in) : TARGET
 {
 	// convert input for vector math
 	float4 rgba = convert_pmalpha(image.Sample(textureSampler, v_in.uv));
-	float speed = (float)speed_percent * 0.01;	
-	float softness = max(abs((float)gradient_percent * 0.01), 0.01) * sign(gradient_percent);
-	float delay = clamp((float)delay_percent * 0.01, 0.0, 1.0);
+	float speed = speed_percent * 0.01;	
+	float softness = max(abs(gradient_percent * 0.01), 0.01) * sign(gradient_percent);
+	float delay = clamp(delay_percent * 0.01, 0.0, 1.0);
 	
 
 	// circular easing variable
-	float PI = 3.1415926535897932384626433832795;//acos(-1);
 	float direction = abs(sin((elapsed_time - 0.001) * speed));	
 	float t = abs(sin(elapsed_time * speed));
 
@@ -81,7 +81,7 @@ float4 mainImage(VertData v_in) : TARGET
 	t = (frac(t) - delay) * (1 / (1 - delay));
 	t = 1 + max(t,0.0);
 
-	float b = 0.0; //start value
+	float s = 0.0; //start value
 	float c = 2.0; //change value
 	float d = 2.0; //duration
 
@@ -90,11 +90,11 @@ float4 mainImage(VertData v_in) : TARGET
 	//if Unidirectional disable on return
 	if (One_Direction && (direction < 0.0))
 	{ 
-		b = 0;
+		s = 0;
 	}
 	else
 	{
-		b = Styler(t, 0, c, d, ease);
+		s = Styler(t, 0, c, d, ease);
 	}
 
 	// combine luma texture and user defined shine color
@@ -112,7 +112,7 @@ float4 mainImage(VertData v_in) : TARGET
 		// user color with luma
 		float4 output_color = float4(shine_color.rgb, luma);
 
-		float time = lerp(0.0f, 1.0f + abs(2*softness), b - 1.0);
+		float time = lerp(0.0f, 1.0f + abs(2*softness), s - 1.0);
 
 		// use luma texture to add alpha and shine
 
@@ -140,10 +140,10 @@ float4 mainImage(VertData v_in) : TARGET
 		}
 
 		// else show the glow area, with luminance
-		float alpha = (time - luma) / softness;
+		float alpha_ = (time - luma) / softness;
 		if (Apply_To_Alpha_Layer)
-			alpha *= rgba.a;
-		return lerp(rgba, rgba + output_color, alpha);
+			alpha_ *= rgba.a;
+		return lerp(rgba, rgba + output_color, alpha_);
 	}
 	else
 	{

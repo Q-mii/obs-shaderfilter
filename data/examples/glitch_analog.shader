@@ -1,6 +1,6 @@
-
 // analog glitch shader by Charles Fettinger for obs-shaderfilter plugin 3/2019
 //https://github.com/Oncorporation/obs-shaderfilter
+//Converted to OpenGL by Q-mii & Exeldro February 22, 2022
 uniform float scan_line_jitter_displacement = 0.33; // (displacement, threshold)
 uniform int scan_line_jitter_threshold_percent = 95;
 uniform float vertical_jump_amount;
@@ -26,9 +26,9 @@ float nrand(float x, float y)
 
 float4 mainImage(VertData v_in) : TARGET
 {
-	float speed = (float)pulse_speed_percent * 0.01;	
-	float alpha = (float)alpha_percent * 0.01;
-	float scan_line_jitter_threshold = (float)scan_line_jitter_threshold_percent * 0.01;
+	float speed = pulse_speed_percent * 0.01;	
+	float alpha = alpha_percent * 0.01;
+	float scan_line_jitter_threshold = scan_line_jitter_threshold_percent * 0.01;
 	float u = v_in.uv.x;
 	float v = v_in.uv.y;
 	float t = sin(elapsed_time * speed) * 2 - 1;
@@ -71,9 +71,9 @@ float4 mainImage(VertData v_in) : TARGET
 
     if (Apply_To_Alpha_Layer)
     {
-        float4 luma = dot(color, float4(0.30, 0.59, 0.11, 1.0));
+        float luma = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
         if (Replace_Image_Color)
-            color = luma;
+            color = float4(luma, luma, luma, luma); 
         rgba = lerp(original_color, rgba * color, alpha);
     }
 	

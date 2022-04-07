@@ -1,7 +1,7 @@
 // Embers effect by Charles Fettinger for obs-shaderfilter plugin 8/2020 v.1
 // https://github.com/Oncorporation/obs-shaderfilter
 // https://www.shadertoy.com/view/wl2Gzc - coverted from and updated
-
+//Converted to OpenGL by Q-mii and Exeldro February 19, 2022
 uniform float4x4 ViewProj;
 uniform texture2d image;
 
@@ -23,7 +23,7 @@ uniform string notes = "luma is applied with Apply to Alpha Layer. Movement Spee
 #define ivec2 int2
 #define ivec3 int3
 #define ivec4 int4
-#define mat2 float2x2
+#define mat2 mat2x2
 #define mat3 float3x3
 #define mat4 float4x4
 #define fract frac

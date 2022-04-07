@@ -1,5 +1,6 @@
 //based on https://www.shadertoy.com/view/Ms3XWH converted by Exeldro  v 1.0
 //updated by Charles 'Surn' Fettinger for obs-shaderfilter 9/2020
+//Converted to OpenGL by Exeldro February 19, 2022
 uniform float range = 0.05;
 uniform float noiseQuality = 250.0;
 uniform float noiseIntensity = 0.88;
@@ -12,6 +13,10 @@ uniform bool Apply_To_Image;
 uniform bool Replace_Image_Color;
 uniform float4 Color_To_Replace;
 uniform bool Apply_To_Specific_Color;
+
+float dot(float2 a,float2 b){
+    return a.x*b.x+a.y*b.y;
+}
 
 float rand(float2 co)
 {
@@ -28,12 +33,21 @@ float verticalBar(float pos, float uvY, float offset)
     return x;
 }
 
+float mod(float x, float y)
+{
+	return x - y * floor(x / y);
+}
+
+float dot(float4 a,float4 b){
+    return a.r*b.r+a.g*b.g+a.b*b.b+a.a*b.a;
+}
+
 float4 mainImage(VertData v_in) : TARGET
 {
     float2 uv = v_in.uv;
     for (float i = 0.0; i < 0.71; i += 0.1313)
     {
-        float d = (elapsed_time * i) % 1.7;
+        float d = mod(elapsed_time * i, 1.7);
         float o = sin(1.0 - tan(elapsed_time * 0.24 * i));
     	o *= offsetIntensity;
         uv.x += verticalBar(d, uv.y, o);
@@ -59,9 +73,9 @@ float4 mainImage(VertData v_in) : TARGET
     {
         color = image.Sample(textureSampler, v_in.uv);
         original_color = color;
-        float4 luma = dot(color, float4(0.30, 0.59, 0.11, 1.0));
+        float luma = dot(color, float4(0.30, 0.59, 0.11, 1.0));
         if (Replace_Image_Color)
-            color = luma;
+            color = float4(luma,luma,luma,luma);
         rgba = lerp(original_color, rgba * color, clamp(Alpha_Percentage * .01, 0, 1.0));
 		
     }

@@ -1,3 +1,4 @@
+//Converted to OpenGL by Q-mii & Exeldro February 21, 2022
 uniform	float innerRadius = 0.9;
 uniform	float outerRadius = 1.5;
 uniform	float opacity = 0.8;
@@ -24,7 +25,7 @@ float4 mainImage(VertData v_in) : TARGET
 	vignetColor *= opacity;
 	c0 *= 1-opacity;
 
-	float4 output = c0 + vignetColor;	
+	float4 output_color = c0 + vignetColor;	
 	
-	return output;
+	return float4(output_color);
 }

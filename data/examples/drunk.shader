@@ -1,4 +1,5 @@
 // Drunk shader by Charles Fettinger  (https://github.com/Oncorporation)  2/2019
+//Converted to OpenGL by Q-mii & Exeldro March 11, 2022
 uniform float4x4 color_matrix;
 
 
@@ -37,14 +38,14 @@ float BlurStyler(float t,float b,float c,float d,bool ease)
 float4 InternalGaussianPrecalculated(float2 p_uv, float2 p_uvStep, int p_radius,
   texture2d p_image, float2 p_imageTexel,
   texture2d p_kernel, float2 p_kernelTexel) {
-	float4 l_value = p_image.Sample(pointClampSampler, p_uv)
+	float4 l_value = image.Sample(pointClampSampler, p_uv)
 		* kernel.Sample(pointClampSampler, float2(0, 0)).r;
 	float2 l_uvoffset = float2(0, 0);
 	for (int k = 1; k <= p_radius; k++) {
 		l_uvoffset += p_uvStep;
-		float l_g = p_kernel.Sample(pointClampSampler, p_kernelTexel * k).r;
-		float4 l_p = p_image.Sample(pointClampSampler, p_uv + l_uvoffset) * l_g;
-		float4 l_n = p_image.Sample(pointClampSampler, p_uv - l_uvoffset) * l_g;
+		float l_g = kernel.Sample(pointClampSampler, p_kernelTexel * k).r;
+		float4 l_p = image.Sample(pointClampSampler, p_uv + l_uvoffset) * l_g;
+		float4 l_n = image.Sample(pointClampSampler, p_uv - l_uvoffset) * l_g;
 		l_value += l_p + l_n;
 	}
 	return l_value;
@@ -52,18 +53,16 @@ float4 InternalGaussianPrecalculated(float2 p_uv, float2 p_uvStep, int p_radius,
 
 float4 mainImage(VertData v_in) : TARGET
 {
-	const float2 offsets[4] = 
-	{
-		-0.05,  0.066,
-		-0.05, -0.066,
-		0.05, -0.066,
-		0.05,  0.066
-	};
+	float2 offsets[4];
+    offsets[0] = float2(-0.05,  0.066);
+    offsets[1] = float2(-0.05, -0.066);
+    offsets[2] = float2(0.05, -0.066);
+    offsets[3] = float2(0.05,  0.066);
 
 	// convert input for vector math
-	float blur_amount = (float)blur /100;
-	float glow_amount = (float)glow_percent * 0.1;
-	float speed = (float)pulse_speed_percent * 0.01;	
+	float blur_amount = float(blur) /100;
+	float glow_amount = float(glow_percent) * 0.1;
+	float speed = float(pulse_speed_percent) * 0.01;	
 	float luminance_floor = float(min_brightness) * 0.01;
 	float luminance_ceiling = float(max_brightness) * 0.01;
 
@@ -94,7 +93,7 @@ float4 mainImage(VertData v_in) : TARGET
 			}			
 		}	
 
-		float intensity = dot(ncolor * 1 ,float3(0.299,0.587,0.114));
+		float intensity = ncolor.r * 0.299 + ncolor.g * 0.587 + ncolor.b * 0.114;
 		if (((intensity >= luminance_floor) && (intensity <= luminance_ceiling)) || // test luminance
 			((color.r == glow_color.r) && (color.g == glow_color.g) && (color.b == glow_color.b)) || //test for chosen color
 			glitch_on) //test for rand color

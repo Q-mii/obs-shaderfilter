@@ -1,7 +1,7 @@
 // divide and rotate shader for OBS Studio shaderfilter plugin
 // originally from shadertoy (https://www.shadertoy.com/view/3sy3Dh)
 // Modified by Charles Fettinger (https://github.com/Oncorporation)  10/2019
-
+//Converted to OpenGL by Q-mii & Exeldro February 18, 2022
 uniform texture2d iChannel0;
 uniform int speed_percentage = 5; //<Range(-10.0, 10.0)>
 uniform int alpha_percentage = 50; //<Range(0.0, 100.0)>
@@ -24,8 +24,8 @@ float2 iter(float2 uv, float2 rot, float scale) {
 
 float4 mainImage(VertData v_in) : TARGET
 {
- 	float alpha = clamp((float)alpha_percentage * 0.01, 0.0, 1.0);
- 	float speed = clamp((float)speed_percentage * 0.01, -10.0, 10.0);
+ 	float alpha = clamp(alpha_percentage * 0.01, 0.0, 1.0);
+ 	float speed = clamp(speed_percentage * 0.01, -10.0, 10.0);
 
 	// Normalize coords
 	//float2 uv = (v_in.uv * uv_scale + uv_offset);

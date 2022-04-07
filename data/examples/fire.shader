@@ -1,7 +1,7 @@
 //fire shader modified by Charles Fettinger for use with obs-shaderfilter 07/20 v.6
 // https://github.com/Oncorporation/obs-shaderfilter plugin
 // https://www.shadertoy.com/view/MtcGD7 original version
-
+//Converted to OpenGL by Q-mii & Exeldro February 22, 2022
 //v.5
 // flicker
 // flame type
@@ -107,12 +107,12 @@ float fbm(vec2 n)
 float4 mainImage(VertData v_in) : TARGET
 {
     float2 iResolution = uv_scale;
-    float flame_size = clamp((float)Flame_Size * .01,-5,5);
+    float flame_size = clamp(Flame_Size * .01,-5,5);
 
     // inverting direction is logically inverted to allow the bottom up to be normal
     float fire_base = (v_in.uv.y / iResolution.y);
     float2 fire_pix = v_in.uv.xy + float2(flame_size -1,0);
-    float direction = -1.0 * clamp((float)Speed*.01,-5,5);        
+    float direction = -1.0 * clamp(Speed*.01,-5,5);        
     if (!Invert)
     {
         direction *= -1.0;
@@ -128,9 +128,9 @@ float4 mainImage(VertData v_in) : TARGET
     const vec3 c5 = vec3(0.1, 0.1, 0.1);
     const vec3 c6 = vec3(0.9, 0.9, 0.9);
 
-    vec2 speed = vec2(1.2, 0.1) * clamp((float)Speed*.01,-5,5);
+    vec2 speed = vec2(1.2, 0.1) * clamp(Speed*.01,-5,5);
     float shift = 1.327 * (1/flame_size) - sin(iTime * 2.0) / 2.4;
-    float alpha = saturate((float)Alpha_Percentage * .01);
+    float alpha = saturate(Alpha_Percentage * .01);
     
     //change the constant term for all kinds of cool distance versions,
     //make plus/minus to switch between 
@@ -200,9 +200,9 @@ float4 mainImage(VertData v_in) : TARGET
         original_color = color;
         if (color.a > 0.0)
         {    
-            float4 luma = dot(color, float4(0.30, 0.59, 0.11, color.a));
+            float luma = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
             if (Replace_Image_Color)
-                color = luma;            
+                color = float4(luma, luma, luma, luma);            
             rgba = lerp(original_color, lerp(original_color,rgba * color,rgba.a), alpha);
         }
         else

@@ -1,6 +1,7 @@
 // Edge Detection for OBS Studio
 // originally from Andersama (https://github.com/Andersama)
 // Modified and improved my Charles Fettinger (https://github.com/Oncorporation)  1/2019
+//Converted to OpenGL by Q-mii & Exeldro March 8, 2022
 uniform float sensitivity = 0.05;
 uniform bool invert_edge;
 uniform float4 edge_color;
@@ -18,12 +19,12 @@ float4 mainImage(VertData v_in) : TARGET
 {
 	float4 color = image.Sample(textureSampler, v_in.uv);
 	
-	const float s = 3;
-    const float hstep = uv_pixel_interval.x;
-    const float vstep = uv_pixel_interval.y;
+	 float s = 3;
+     float hstep = uv_pixel_interval.x;
+     float vstep = uv_pixel_interval.y;
 	
-	float offsetx = (hstep * (float)s) / 2.0;
-	float offsety = (vstep * (float)s) / 2.0;
+	float offsetx = (hstep * s) / 2.0;
+	float offsety = (vstep * s) / 2.0;
 	
 	float4 lum = float4(0.30, 0.59, 0.11, 1 );
 	float samples[9];

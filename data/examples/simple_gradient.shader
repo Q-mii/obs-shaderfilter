@@ -2,7 +2,7 @@
 // https://github.com/Oncorporation/obs-shaderfilter
 
 //lots of room to play here
-
+//Converted to OpenGL by Q-mii & Exeldro February 25, 2022
 uniform int speed_percentage = 240; //<Range(-100.0, 100.0)>
 uniform int alpha_percentage = 90;
 uniform bool Lens_Flair = false;
@@ -17,9 +17,13 @@ float4 mainImage(VertData v_in) : TARGET
 
 	float4 background_color = image.Sample(textureSampler, v_in.uv);
 	int no_colors = 4;
- 	float3 colors[4] = {float3(1.0,0.0,0.0),float3(0.0,1.0,0.0),float3(0.0,0.0,1.0),float3(1.0,1.0,1.0)};
- 	float alpha = (float)alpha_percentage * 0.01;
- 	float speed = (float)speed_percentage * 0.01;
+ 	float3 colors[4];
+     colors[0] = float3(1.0,0.0,0.0);
+     colors[1] = float3(0.0,1.0,0.0);
+     colors[2] = float3(0.0,0.0,1.0);
+     colors[3] = float3(1.0,1.0,1.0);
+ 	float alpha = float(alpha_percentage) * 0.01;
+ 	float speed = float(speed_percentage) * 0.01;
 
 	float mx = max(uv_size.x , uv_size.y);
 	//float2 uv = v_in.uv / mx;

@@ -1,7 +1,7 @@
 // Simplex Noise shader by Charles Fettinger (https://github.com/Oncorporation)  5/2019
 // for use with obs-shaderfilter 1.0
 //based upon: https://www.shadertoy.com/view/XsX3zB
-
+//Converted to OpenGL by Q-mii & Exeldro March 8, 2022
 uniform float Snap_Percent = 7.5;
 uniform float Speed_Percent = 2.5;
 uniform float Resolution = 16.0;
@@ -12,6 +12,9 @@ uniform float4 Back_Color = {0.75, 0.75, 0.75, 1.0};
 uniform float Alpha_Percent = 100.0;
 uniform string Notes = "Alpha Percentage applies to the shader, Use_Alpha_Layer applies effect with the image alpha layer, Resolution is the amount of detail of noise created.Fractal is a different algorithm. Snap Percent affects how many updates per second. Default values: 7.5%, 2.5%, 16.0, 100%";
 
+float dot(float3 a, float3 b){
+    return a.r*b.r+a.g*b.g+a.b*b.b;
+}
 float snap(float x, float snap)
 {
 	return snap * round(x / max(0.01,snap));
@@ -21,11 +24,11 @@ float3 random3(float3 co)
 {
 	float j = 4096.0 * sin(dot(co, float3(17.0, 59.4, 15.0)));
 	float3 result;
-	result.z = frac(512.0 * j);
+	result.z = fract(512.0 * j);
 	j *= .125;
-	result.x = frac(512.0 * j);
+	result.x = fract(512.0 * j);
 	j *= .125;
-	result.y = frac(512.0 * j);
+	result.y = fract(512.0 * j);
 	return result - 0.5;
 }
 
@@ -84,20 +87,20 @@ float simplex3d(float3 p) {
 /* directional artifacts can be reduced by rotating each octave */
 float simplex3d_fractal(float3 m3) {
 	/* const matrices for 3d rotation */
-	float3x3 rot1 = {
+	mat3x3 rot1 = mat3x3(
 	-0.37, 0.36, 0.85,
 	-0.14, -0.93, 0.34,
-	0.92, 0.01, 0.4 };
-	float3x3 rot2 = {
+	0.92, 0.01, 0.4 );
+	mat3x3 rot2 = mat3x3(
 	-0.55, -0.39, 0.74,
 	0.33, -0.91, -0.24,
-	0.77, 0.12, 0.63 };
-	float3x3 rot3 = {
+	0.77, 0.12, 0.63 );
+	mat3x3 rot3 = mat3x3(
 	-0.71, 0.52, -0.47,
 	-0.08, -0.72, -0.68,
-	-0.7, -0.45, 0.56 };
+	-0.7, -0.45, 0.56 );
 
-	float3x1 m = {m3.x, m3.y, m3.z};
+	float3 m = float3(m3.x, m3.y, m3.z);
 	
 	return   0.5333333* simplex3d(m * rot1)
 		+ 0.2666667 * simplex3d(2.0 * m * rot2)
@@ -130,12 +133,12 @@ float4 mainImage(VertData v_in) : TARGET
 
 	//soften color
 	value = 0.5 + (0.5 * value);
-	float intensity = dot(float4(float3(value, value, value), pixel_alpha), float3(0.299, 0.587, 0.114));
+	float intensity = clamp(dot(float3(value, value, value), float3(0.299, 0.587, 0.114)),0.0,1.0);
 
 	//use intensity to apply foreground and background colors
-	float4 r = lerp(float4(float3(value, value, value), pixel_alpha), Fore_Color, saturate(intensity));
-	r = lerp(Back_Color, r, saturate(intensity));
+	float4 r = mix(float4(float3(value, value, value), pixel_alpha), Fore_Color, intensity);
+	r = mix(Back_Color, r, intensity);
 	r.a = pixel_alpha;
 
-	return  lerp(rgba, r, Alpha_Percent * 0.01);
+	return  mix(rgba, r, Alpha_Percent * 0.01);
 }

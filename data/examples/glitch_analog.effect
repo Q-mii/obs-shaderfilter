@@ -1,3 +1,4 @@
+//Converted to OpenGl by Q-mii & Exeldro February 22, 2022
 uniform float4x4 ViewProj;
 uniform texture2d image;
 
@@ -52,9 +53,9 @@ float nrand(float x, float y)
 
 float4 mainImage(VertData v_in) : TARGET
 {
-    float speed = clamp((float) pulse_speed_percent * 0.01, -10.0, 10);
-    float alpha = clamp((float) alpha_percent * 0.01, 0.0, 1.0);
-	float scan_line_jitter_threshold = (float)scan_line_jitter_threshold_percent * 0.01;
+    float speed = clamp(pulse_speed_percent * 0.01, -10.0, 10);
+    float alpha = clamp(alpha_percent * 0.01, 0.0, 1.0);
+	float scan_line_jitter_threshold = scan_line_jitter_threshold_percent * 0.01;
 	float u = v_in.uv.x;
 	float v = v_in.uv.y;
 	float t = sin(elapsed_time * speed) * 2 - 1;
@@ -90,9 +91,9 @@ float4 mainImage(VertData v_in) : TARGET
 
     if (Apply_To_Alpha_Layer)
     {        
-        float4 luma = dot(color, float4(0.30, 0.59, 0.11, 1.0));
+        float luma = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
         if (Replace_Image_Color)
-            color = luma;
+            color = float4(luma, luma, luma, luma);
         rgba = lerp(original_color, rgba * color, alpha);		
     }
 	

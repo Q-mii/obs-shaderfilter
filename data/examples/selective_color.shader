@@ -1,7 +1,7 @@
 // Selective Color shader by Charles Fettinger for obs-shaderfilter plugin 3/2019
 //https://github.com/Oncorporation/obs-shaderfilter
 //updated 4/13/2020: take into account the opacity/alpha of input image		-thanks Skeletonbow for suggestion
-
+//Converted to OpenGL by Q-mii February 25, 2020
 uniform float cutoff_Red = 0.40;
 uniform float cutoff_Green = 0.025;
 uniform float cutoff_Blue = 0.25;
@@ -24,22 +24,22 @@ float4 mainImage(VertData v_in) : TARGET
 	float luminance 	= dot(coefLuma, color.rgb);	
 	float4 gray			= float4(luminance, luminance, luminance, 1.0);
 
-	 [branch] if (background_type == 0)
+	 if (background_type == 0)
 	 {
 	 	luminance		= (color.r + color.g + color.b) * 0.3333;
 	 	gray 			= float4(luminance,luminance,luminance, 1.0);
 	 }	 	
-	 //[branch] if (background_type == 1)
+	 //if (background_type == 1)
 	 //{
 	 //	gray 			= float4(luminance,luminance,luminance, 1.0);
 	 //}
-	 [branch] if (background_type == 2)
+	 if (background_type == 2)
 	 	gray 			= float4(1.0,1.0,1.0,1.0);
-	 [branch] if (background_type == 3)
+	 if (background_type == 3)
 	 	gray 			= float4(0.0,0.0,0.0,1.0);
-	 [branch] if (background_type == 4)
+	 if (background_type == 4)
 	 	gray.a 			=  0.01;
-	 [branch] if (background_type == 5)
+	 if (background_type == 5)
 	 	gray 			= color;
 
 	float redness		= max ( min ( color.r - color.g , color.r - color.b ) / color.r , 0);
@@ -52,10 +52,10 @@ float4 mainImage(VertData v_in) : TARGET
  	float yellowness	= 0.1 + rgLuminance * 1.2 - color.b - rgDiff;
 
 	float4 accept;
-	accept.r			= show_Red * (redness - cutoff_Red);
-	accept.g			= show_Green * (greenness - cutoff_Green);
-	accept.b			= show_Blue * (blueness - cutoff_Blue);
-	accept[3]			= show_Yellow * (yellowness - cutoff_Yellow);
+	accept.r			= float(show_Red) * (redness - cutoff_Red);
+	accept.g			= float(show_Green) * (greenness - cutoff_Green);
+	accept.b			= float(show_Blue) * (blueness - cutoff_Blue);
+	accept[3]			= float(show_Yellow) * (yellowness - cutoff_Yellow);
 
 	float acceptance	= max (accept.r, max(accept.g, max(accept.b, max(accept[3],0))));
 	float modAcceptance	= min (acceptance * acceptance_Amplifier, 1);

@@ -1,7 +1,7 @@
 // Scan Line Effect for OBS Studio
 // originally from Andersama (https://github.com/Andersama)
 // Modified and improved my Charles Fettinger (https://github.com/Oncorporation)  1/2019
-
+//Converted to OpenGL by Q-mii & Exeldro February 21, 2022
 //Count the number of scanlines we want via height or width, adjusts the sin wave period
 uniform bool lengthwise;
 //Do we want the scanlines to move?
@@ -23,13 +23,13 @@ uniform string notes = "floor affects the minimum opacity of the scan line";
 float4 mainImage(VertData v_in) : TARGET
 {
 	//3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481 							3.141592653589793238462643383279502884197169399375105820974944592307816406286 
-	//static const float pix2 = 6.2831853071795864769252;//86766559005768394338798750211641949
-	static const float nfloor = clamp(floor, 0.0, 100.0) * 0.01;
-	static const float nperiod = max(period, 1.0);
-	static const float gap = 1 - nfloor;
-	static const float pi   = 3.1415926535897932384626;
-	static float2 direction = float2( cos(angle * pi / 180.0) , sin(angle * pi / 180.0) );
-	static float nspeed = 0.0;
+	// float pix2 = 6.2831853071795864769252;//86766559005768394338798750211641949
+	 float nfloor = clamp(floor, 0.0, 100.0) * 0.01;
+	 float nperiod = max(period, 1.0);
+	 float gap = 1 - nfloor;
+	 float pi   = 3.1415926535897932384626;
+	 float2 direction = float2( cos(angle * pi / 180.0) , sin(angle * pi / 180.0) );
+	 float nspeed = 0.0;
 	if(animate){
 		nspeed = speed * 0.0001;
 	}
@@ -39,8 +39,8 @@ float4 mainImage(VertData v_in) : TARGET
 	float t = elapsed_time * nspeed;
 	
 	if(!lengthwise){
-		static const float base_height = 1.0 / uv_pixel_interval.y;
-		static const float h_interval = pi * base_height;
+		 float base_height = 1.0 / uv_pixel_interval.y;
+		 float h_interval = pi * base_height;
 		
 		float rh_sin = sin(((v_in.uv.y * direction.y + v_in.uv.x * direction.x) + t) * (h_interval / nperiod));
 		if(shift){
@@ -53,8 +53,8 @@ float4 mainImage(VertData v_in) : TARGET
 		return s_mult * color;
 	}
 	else{
-		static const float base_width = 1.0 / uv_pixel_interval.x;
-		static const float w_interval = pi * base_width;
+		 float base_width = 1.0 / uv_pixel_interval.x;
+		 float w_interval = pi * base_width;
 		
 		float rh_sin = sin(((v_in.uv.y * direction.y + v_in.uv.x * direction.x) + t) * (w_interval / nperiod));
 		if(shift){

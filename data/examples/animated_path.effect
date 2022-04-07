@@ -1,4 +1,5 @@
 // Path effect By Charles Fettinger (https://github.com/Oncorporation)  3/2019
+//Converted to OpenGL by Q-mii & Exeldro February 24, 2022
 uniform float4x4 ViewProj;
 uniform texture2d image;
 
@@ -24,11 +25,11 @@ struct VertData {
 	float2 uv  : TEXCOORD0;
 };
 
-float4 convert_pmalpha(float4 color)
+float4 convert_pmalpha(float4 c)
 {
-	float4 ret = color;
-	if (color.a >= 0.001)
-		ret.xyz /= color.a;
+	float4 ret = c;
+	if (c.a >= 0.001)
+		ret.xyz /= c.a;
 	else
 		ret = float4(0.0, 0.0, 0.0, 0.0);
 	return ret;
@@ -39,7 +40,7 @@ VertData mainTransform(VertData v_in)
 	VertData vert_out;
 	float3 pos = v_in.pos.xyz;
 	float3 current_pos;
-	float speed = (float)speed_percent * 0.01;
+	float speed = speed_percent * 0.01;
 	//vert_out.pos = mul(float4(v_in.pos.xyz, 1.0), ViewProj);
 	float t = 1.0 + sin(elapsed_time * speed) ;
 	// combine luma texture and user defined shine color
@@ -60,8 +61,8 @@ VertData mainTransform(VertData v_in)
 	if (speed == 0.0f)
 	{
 		offset.x = 0.0f;
-		offset.y = 0.0f
-	}
+		offset.y = 0.0f;
+	} //ERROR: 0:72: '}' : syntax error: syntax error
 	else
 	{
 		offset.x = uv_offset.x + time * luma;

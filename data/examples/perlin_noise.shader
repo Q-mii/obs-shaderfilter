@@ -22,7 +22,7 @@
 // Copyright (c) 2011 Stefan Gustavson. All rights reserved.
 // Distributed under the MIT license. See LICENSE file.
 // https://github.com/ashima/webgl-noise
-//
+//Converted to OpenGL by Q-mii & Exeldro March 8, 2022
  float4 mod(float4 x, float4 y)
 {
   return x - y * floor(x / y);
@@ -37,7 +37,7 @@
 }
  float4 taylorInvSqrt(float4 r)
 {
-  return (float4)1.79284291400159 - r * 0.85373472095314;
+  return 1.79284291400159 - r * 0.85373472095314;
 }
  float2 fade(float2 t) {
   return t*t*t*(t*(t*6.0-15.0)+10.0);
@@ -140,7 +140,7 @@ uniform string notes = "white noise and black noise and iterations.. enjoy!";
 		float w = 0.5;
 		for(int i = 0; i < iterations; i++){
 			float2 coord = v_in.uv * scale;
-			float2 period = scale * 2.0;
+			float2 period = float2(scale * 2.0);
 			
 			if(white_noise == 0.0 && black_noise == 0.0){
 				o += pnoise(coord, period) * w;
@@ -176,7 +176,7 @@ uniform string notes = "white noise and black noise and iterations.. enjoy!";
 		float w = 0.5;
 		for(int i = 0; i < iterations; i++){
 			float2 coord = (v_in.uv + t*dir) * scale;
-			float2 period = scale * 2.0;
+			float2 period = float2(scale * 2.0);
 			
 			if(white_noise == 0.0 && black_noise == 0.0){
 				o += pnoise(coord, period) * w;

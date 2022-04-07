@@ -1,5 +1,6 @@
 // gradient shader by Charles Fettinger for obs-shaderfilter plugin 3/2019
 //https://github.com/Oncorporation/obs-shaderfilter
+//Converted to OpenGL by Q-mii & Exeldro February 25, 2022
 uniform float4 start_color = { 0.1, 0.3, 0.1, 1.0 };
 uniform float start_step = 0.15;
 uniform float4 middle_color = { 1.0, 1.0, 1.0, 1.0 };
@@ -42,8 +43,8 @@ struct gradient
 float4 mainImage(VertData v_in) : TARGET
 {
 	const float PI = 3.14159265f;//acos(-1);
-	float speed = (float)pulse_speed * 0.01;
-	float alpha = (float)alpha_percent * 0.01;
+	float speed = float(pulse_speed) * 0.01;
+	float alpha = float(alpha_percent) * 0.01;
 	
 	//circular easing variable
 	float t = sin(elapsed_time * speed) * 2 - 1;
@@ -51,10 +52,10 @@ float4 mainImage(VertData v_in) : TARGET
 	float c = 2.0; //change value
 	float d = 2.0; //duration
 
-	float2 gradient_center = float2((float)gradient_center_width_percentage * 0.01,(float)gradient_center_height_percentage * 0.01);
+	float2 gradient_center = float2(float(gradient_center_width_percentage) * 0.01,float(gradient_center_height_percentage) * 0.01);
 	float4 color = image.Sample(textureSampler, v_in.uv);
-	float luminance = dot(color, float3(0.299, 0.587, 0.114));
-	float4 gray = {luminance,luminance,luminance, 1};
+	float luminance = color.a * 0.299 + color.g * 0.587 + color.b * 0.114;
+	float4 gray = float4(luminance,luminance,luminance, 1);
 
 	// skip if (alpha is zero and only apply to alpha layer is true) 
 	if (!(color.a <= 0.0 && Apply_To_Alpha_Layer == true))
@@ -102,8 +103,14 @@ float4 mainImage(VertData v_in) : TARGET
 			}
 		}
 
-		float4 colors[no_colors] = { s_color, m_color, e_color };
-		float step[no_colors] = { start_step, middle_step, end_step };
+		float4 colors[no_colors];
+		colors[0] =s_color;
+		colors[1] = m_color;
+		colors[2] = e_color;
+		float step[no_colors];
+		step[0] = start_step;
+		step[1] = middle_step;
+		step[2] = end_step;
 
 		float redness = max(min(color.r - color.g, color.r - color.b) / color.r, 0);
 		float greenness = max(min(color.g - color.r, color.g - color.b) / color.g, 0);

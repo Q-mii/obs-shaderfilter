@@ -1,4 +1,5 @@
 //My effect modified by Me for use with obs-shaderfilter month/year v.02
+//Converted to OpenGL by Q-mii & Exeldro February 22, 2022
 uniform float4x4 ViewProj;
 uniform texture2d image;
 
@@ -252,7 +253,7 @@ float4 mainImage(VertData v_in) : TARGET
     float2 UV = (1.0 - v_in.uv) * uv_scale;
     if (Invert)
         UV = v_in.uv * uv_scale;
-    float alpha = saturate((float) Alpha_Percentage * .01);
+    float alpha = saturate(Alpha_Percentage * .01);
     float flame_size = clamp(Flame_Size * .01, 0.0, 4.0);
     
     vec2 resolution = (.25 * uv_scale * UV.xy) + (0.75 * uv_scale);
@@ -340,9 +341,9 @@ float4 mainImage(VertData v_in) : TARGET
         float4 original_color = color;
         if (color.a > 0.0)
         {    
-            float4 luma = dot(color, float4(0.30, 0.59, 0.11, color.a));
+            float luma = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
             if (Replace_Image_Color)
-                color = luma;            
+                color = float4(luma, luma, luma, luma);            
             rgba = lerp(original_color, lerp(original_color,rgba * color,rgba.a), alpha);
         }
         else

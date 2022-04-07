@@ -1,3 +1,4 @@
+//Converted to OpenGL by Q-mii & Exeldro February 22, 2022
 uniform float4x4 ViewProj;
 uniform texture2d image;
 
@@ -39,11 +40,11 @@ uniform bool is_alpha_premultiplied;
 
 float4 mainImage(VertData v_in) : TARGET
 {
-    int shadow_blur_samples = shadow_blur_size + 1;//pow(shadow_blur_size * 2 + 1, 2);
+    int shadow_blur_samples = int(shadow_blur_size + 1);//pow(shadow_blur_size * 2 + 1, 2);
     
     float4 color = image.Sample(textureSampler, v_in.uv);
-    float2 shadow_uv = float2(v_in.uv.x - uv_pixel_interval.x * shadow_offset_x, 
-                              v_in.uv.y - uv_pixel_interval.y * shadow_offset_y);
+    float2 shadow_uv = float2(v_in.uv.x - uv_pixel_interval.x * int(shadow_offset_x), 
+                              v_in.uv.y - uv_pixel_interval.y * int(shadow_offset_y));
     
     float sampled_shadow_alpha = 0;
     
@@ -57,7 +58,7 @@ float4 mainImage(VertData v_in) : TARGET
     
     float4 final_shadow_color = float4(shadow_color.rgb, shadow_color.a * sampled_shadow_alpha);
     
-    return final_shadow_color * (1-color.a) + color * (is_alpha_premultiplied * 1 + !is_alpha_premultiplied * color.a);
+    return final_shadow_color * (1-color.a) + color * (is_alpha_premultiplied?1.0:color.a);
 }
 
 float4 mainImage_2_end(VertData v_in) : TARGET
@@ -80,7 +81,7 @@ float4 mainImage_2_end(VertData v_in) : TARGET
     
     float4 final_shadow_color = float4(shadow_color.rgb, shadow_color.a * sampled_shadow_alpha);
     
-    return final_shadow_color * (1-color.a) + color * (is_alpha_premultiplied * 1 + !is_alpha_premultiplied * color.a);
+    return final_shadow_color * (1-color.a) + color * (is_alpha_premultiplied?1.0:color.a);
 }
 
 technique Draw

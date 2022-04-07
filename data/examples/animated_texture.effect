@@ -1,7 +1,7 @@
 // Animated Texture By Charles Fettinger (https://github.com/Oncorporation)  3/2020
 // Animates a texture with polar sizing and color options
 // for use with obs-shaderfilter 1.0
-
+//Converted to OpenGL by Q-mii & Exeldro February 24, 2022
 uniform float4x4 ViewProj;
 uniform texture2d image;
 
@@ -101,7 +101,7 @@ float4 mainImage(VertData v_in) : TARGET
 	float2 tint_speed_dir = float2(tint_speed_horizontal_percent * 0.01, tint_speed_vertical_percent * 0.01);
 
 	//compensate for background vertex shader values
-	float2 background_offset = -.5f;
+	float2 background_offset = float2(-.5,-.5);
 	if (!center_animation)
 		background_offset = time(speed_dir);
 	float4 rgba =  image.Sample(textureSampler, v_in.uv - background_offset); //float4(0.0,0.0,0.0,0.01);

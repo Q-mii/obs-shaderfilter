@@ -1,6 +1,6 @@
-// Burn shader by Charles Fettinger (https://github.com/Oncorporation)  4/2019
-// for use with obs-shaderfilter 1.0
-
+//Burn shader by Charles Fettinger (https://github.com/Oncorporation)  4/2019
+//for use with obs-shaderfilter 1.0
+//Converted to OpenGL by Exeldro February 17, 2022
 float4 mod(float4 x, float4 y)
 {
 	return x - y * floor(x / y);
@@ -15,11 +15,16 @@ float4 permute(float4 x)
 }
 float4 taylorInvSqrt(float4 r)
 {
-	return (float4)1.79284291400159 - r * 0.85373472095314;
+	return 1.79284291400159 - r * 0.85373472095314;
 }
 float2 fade(float2 t) {
 	return t * t* t* (t * (t * 6.0 - 15.0) + 10.0);
 }
+
+float dot(float2 a,float2 b){
+	return a.x*b.x+a.y+b.y;
+}
+
 // Classic Perlin noise
 float cnoise(float2 P)
 {

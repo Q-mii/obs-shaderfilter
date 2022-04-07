@@ -1,5 +1,6 @@
 // Rainbow shader by Charles Fettinger for obs-shaderfilter plugin 3/2019
 // https://github.com/Oncorporation/obs-shaderfilter
+//Converted to OpenGL by Exeldro February 13, 2022
 uniform float Saturation = 0.8; //<Range(0.0, 1.0)>
 uniform float Luminosity = 0.5; //<Range(0.0, 1.0)>
 uniform float Spread = 3.8; //<Range(0.5, 10.0)>
@@ -82,9 +83,10 @@ float4 mainImage(VertData v_in) : TARGET
 	{
 		color = image.Sample(textureSampler, v_in.uv);
 		original_color = color;
-		float4 luma = dot(color,float4(0.30, 0.59, 0.11, 1.0));
+		float luma = 0.30*color.r+0.59*color.g+0.11*color.b+1.0*color.a;
+		float4 luma_color = float4(luma, luma, luma, luma);
 		if (Replace_Image_Color)
-			color = luma;
+			color = luma_color;
 		rgba = lerp(original_color, rgba * color,clamp(Alpha_Percentage *.01 ,0,1.0));
 		
 	}

@@ -1,6 +1,6 @@
 // Hexagon shader by Charles Fettinger for obs-shaderfilter plugin 4/2019
 //https://github.com/Oncorporation/obs-shaderfilter
-
+//Converted to OpenGL by Q-mii & Exeldro February 25, 2022
 uniform float4 Hex_Color;
 uniform int Alpha_Percent = 100;
 uniform float Quantity = 25;
@@ -25,18 +25,18 @@ float hex(float2 p) {
 
 	// calc p 
 	p.x = mul(p.x,xyratio);
-	p.y += (floor(p.x) % 2.0)*0.5;
-	p = abs(((p % 1.0) - 0.5));
+	p.y += mod(floor(p.x) , 2.0)*0.5;
+	p = abs((mod(p , 1.0) - 0.5));
 	return abs(max(p.x*1.5 + p.y, p.y*2.0) -1);
 }
 
 float4 mainImage(VertData v_in) : TARGET
 {
 	float4 rgba 		= image.Sample(textureSampler, v_in.uv * uv_scale + uv_offset);
-	float alpha 		= (float)Alpha_Percent * 0.01;	
+	float alpha 		= Alpha_Percent * 0.01;	
 	float quantity 		= sqrt(clamp(Quantity, 0.0, 100.0));
 	float border_width	= clamp(float(Border_Width - 15), -15, 100) * 0.01;
-	float speed 		= (float)Speed_Percent * 0.01;
+	float speed 		= Speed_Percent * 0.01;
 	float time 		= (1 + sin(elapsed_time * speed))*0.5;
 	if (Zoom_Animate)
 		quantity 	*= time;
